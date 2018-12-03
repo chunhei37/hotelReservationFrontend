@@ -220,11 +220,11 @@ async function reservationRequest(roomNo, startDate, endDate, email) {
     var status = await requestServer(request, route);
     if (status.status) {
         hotelAlert('Room successfully reserved!', 2000, 'success');
-        $('#reservationModal').moadl('hide');
+        $('#reservationModal').modal('hide');
         $('#roomList_' + roomNo).remove();
     } else {
         hotelAlert('Failed to reserve room!', 2000, 'danger');
-        $('#reservationModal').moadl('hide');
+        $('#reservationModal').modal('hide');
     }
 }
 
@@ -338,7 +338,6 @@ function setLoginState(token) {
         localStorage.setItem("token", token.message);
         $('#loginBtn, #registerBtn').hide();
         $('#logoutBtn').show();
-        hotelAlert('Welcome back!', 2000, 'info');
         return true;
     } catch (err) {
         console.log(err);
