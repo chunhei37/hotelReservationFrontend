@@ -1,8 +1,12 @@
 var bgImgCount = 5;
+var todayDate = moment().format('MM/DD/YYYY');
 var selectBG = './images/bgImg/bg-' + Math.floor(Math.random() * bgImgCount + 1) + '.jpg';
-$('body').prepend('<img class="img-fluid bg-img position-fixed" src=' + selectBG + '></img>');
+$('body, .loading').prepend('<img class="img-fluid bg-img position-fixed" src=' + selectBG + '></img>');
 $('#filterPanel').toggle();
 checkLoginState();
+setTimeout(function () {
+    $('.loading').fadeOut("slow");
+}, 1500);
 
 function requestServer(data, route) {
     return new Promise(
@@ -35,10 +39,16 @@ $('#loginBtn').on('click', function () {
 $('#registerBtn').on('click', function () {
     $('#registerModal').modal('toggle');
 });
+$('#logoutBtn').on('click', function () {
+    $('#loginBtn, #registerBtn').show();
+    $('#logoutBtn').hide();
+    hotelAlert('Sucessfully logout!', 1500, 'info');
+    localStorage.removeItem('token');
+});
 
 $('#main_dp').daterangepicker({
-    "startDate": "01/05/2019",
-    "endDate": "11/11/2019",
+    "startDate": todayDate,
+    "endDate": todayDate,
     "opens": "center"
 }, function (start, end, label) {
     console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
@@ -46,8 +56,8 @@ $('#main_dp').daterangepicker({
 $('#register_dp').daterangepicker({
     "singleDatePicker": true,
     "showDropdowns": true,
-    "startDate": "11/05/2018",
-    "endDate": "11/11/2018",
+    "startDate": todayDate,
+    "endDate": todayDate,
     "opens": "top",
     "drops": "up"
 }, function (start, end, label) {
@@ -56,8 +66,8 @@ $('#register_dp').daterangepicker({
 
 
 $('#reservation_dp').daterangepicker({
-    "startDate": "11/05/2018",
-    "endDate": "11/11/2018",
+    "startDate": todayDate,
+    "endDate": todayDate,
     "opens": "right",
     "drops": "right"
 }, function (start, end, label) {
@@ -65,8 +75,8 @@ $('#reservation_dp').daterangepicker({
 });
 
 $('#filter_dp').daterangepicker({
-    "startDate": "11/05/2018",
-    "endDate": "11/11/2018",
+    "startDate": todayDate,
+    "endDate": todayDate,
     "opens": "top",
     "drops": "up"
 }, function (start, end, label) {
@@ -84,9 +94,9 @@ $('#filterMinPrice, #filterMaxPrice, #filter_dp').on('change', async function ()
     timeRange = timeRange.split(' - ');
     var data = await filterRequest(timeRange, money);
     if (data.status) {
-            console.log(data);
-            var room = findAllAvRoom(data.message[0], data.message[1])
-            populateList(room);
+        console.log(data);
+        var room = findAllAvRoom(data.message[0], data.message[1])
+        populateList(room);
     }
 })
 
@@ -158,7 +168,7 @@ function populateList(roomInfo) {
         var desc = 'No one died in this one so far. Nothing to worry.';
         desc += 'The room size is ' + i.room_size + ' sqft. ';
         var setup = wifiIcon + tvIcon;
-        var listItem = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">Room ' + title + '</h5><p class="lead">$' + price + '</p></div><p class="mb-1">' + desc + '</p><small>' + setup + '</small></a>';
+        var listItem = '<a id="roomList_' + i.roomNo + '"  href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">Room ' + title + '</h5><p class="lead">$' + price + '</p></div><p class="mb-1">' + desc + '</p><small>' + setup + '</small></a>';
         $(listItem).appendTo('#roomList').on('click', function () {
             $('#reserveRoomNo').text(title);
             $('#reserveRoomPrice').text(price);
@@ -176,18 +186,18 @@ $('#reservation_dp').on('change', function () {
     $('#reserveSubmit').removeClass('disabled');
 });
 
-$('#reserveSubmit').on('click', function() {
+$('#reserveSubmit').on('click', function () {
     var roomNo = $('#reserveRoomNo').text().trim();
     var time = $('#reservation_dp').val();
     time = time.split(' - ');
-    if(checkLoginState()) {
+    if (checkLoginState()) {
         var email = localStorage.getItem('email');
         reservationRequest(roomNo, time[0], time[1], email);
     } else {
-        var email = 'guest'+ time[0] + time[1] +'@'+roomNo+'.com'
+        var email = 'guest' + time[0] + time[1] + '@' + roomNo + '.com'
         reservationRequest(roomNo, time[0], time[1], email);
     }
-    
+
 });
 
 function getReservationRequest(startDate, endDate) {
@@ -208,10 +218,13 @@ async function reservationRequest(roomNo, startDate, endDate, email) {
         'check_out_date': endDate
     };
     var status = await requestServer(request, route);
-    if(status.status) {
+    if (status.status) {
         hotelAlert('Room successfully reserved!', 2000, 'success');
+        $('#reservationModal').moadl('hide');
+        $('#roomList_' + roomNo).remove();
     } else {
         hotelAlert('Failed to reserve room!', 2000, 'danger');
+        $('#reservationModal').moadl('hide');
     }
 }
 
@@ -277,26 +290,34 @@ async function filterRequest(dateArr, priceArr, sizeArr) {
 
 async function checkToken(token) {
     var route = '/login/authenticate';
-    var data = await $.ajax({
-        url: 'http://18.188.103.56:3002' + route,
-        headers: {
-            // 'Authorization': 'Bearer ' + token
-            'Authorization': token
-        },
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            console.log(data.message);
-            return data;
+    try {
+
+
+        var data = await $.ajax({
+            url: 'http://18.188.103.56:3002' + route,
+            headers: {
+                // 'Authorization': 'Bearer ' + token
+                'Authorization': token
+            },
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.message);
+                return data;
+            }
+        });
+        if (data.status) {
+            return setLoginState(data);
+        } else {
+            localStorage.removeItem("token");
+            hotelAlert('Login session expired! Please relogin.', 2000, 'warning');
+            $('#loginBtn, #registerBtn').show();
+            $('#logoutBtn').show();
+            return false;
         }
-    });
-    if (data.status) {
-        return setLoginState(data);
-    } else {
-        localStorage.removeItem("token");
-        $('#logRegGrp').show();
-        hotelAlert('Login session expired! Please relogin.', 2000, 'warning');
-        return false;
+    } catch (err) {
+        $('#loginBtn, #registerBtn').show();
+        $('#logoutBtn').hide();
     }
     // var valid = await requestServer(request, route);
 }
@@ -307,7 +328,7 @@ function checkLoginState() {
         return checkToken(token);
     }
 
-    $('#logRegGrp').show();
+    $('#loginBtn, #registerBtn').show();
     return false;
 }
 
@@ -315,8 +336,9 @@ function setLoginState(token) {
     try {
         console.log(token);
         localStorage.setItem("token", token.message);
-        $('#logRegGrp').hide();
-        hotelAlert('Welcome back!', 2000, 'light');
+        $('#loginBtn, #registerBtn').hide();
+        $('#logoutBtn').show();
+        hotelAlert('Welcome back!', 2000, 'info');
         return true;
     } catch (err) {
         console.log(err);
@@ -355,18 +377,18 @@ function hotelAlert(msg, time, alertType) {
 
 function findAllAvRoom(room, reservedRoom) {
     var usedRoomList = [];
-    for(var i of room) {
-        for(var j of reservedRoom) {
-            if(i.roomNo == j.roomNo) {
-                if(usedRoomList.indexOf(i.roomNo) < 0) {
+    for (var i of room) {
+        for (var j of reservedRoom) {
+            if (i.roomNo == j.roomNo) {
+                if (usedRoomList.indexOf(i.roomNo) < 0) {
                     usedRoomList.push(i.roomNo);
                 }
             }
         }
     }
     var tempList = [];
-    for(var i of room) {
-        if(usedRoomList.indexOf(i.roomNo) < 0) {
+    for (var i of room) {
+        if (usedRoomList.indexOf(i.roomNo) < 0) {
             tempList.push(i);
         }
     }

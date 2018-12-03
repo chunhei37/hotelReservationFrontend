@@ -12,43 +12,52 @@
 </head>
 
 <body>
-    <div class="position-absolute "> 
+    <div class="loading">
+        <div id="loading_logo" class="text-center" style="margin-top: 25%;">
+            <i class="pt-4 pl-5 pb-3 fas fa-cog fa-spin fa-10x fa-inverse"></i>
+        </div>
+    </div>
+    <div class="position-absolute ">
         <h2 class="c2 ml-5 d-block d-sm-block d-md-none">Not A Hotel</h2>
     </div>
-    <div id="logRegGrp" class="container mt-3 pr-5" style="display: none">
+    <div id="logRegGrp" class="container mt-3 pr-5">
         <div class="row">
             <div class="ml-auto">
-                <button id="registerBtn" class="btn btn-outline-light">
+                <button id="registerBtn" class="btn btn-outline-light" style="display: none">
                     Sign Up
                 </button>
-                <button id="loginBtn" class="btn btn-outline-light">
+                <button id="loginBtn" class="btn btn-outline-light" style="display: none">
                     Login
+                </button>
+                <button id="logoutBtn" class="btn btn-outline-light" style="display: none">
+                    Logout
                 </button>
             </div>
         </div>
     </div>
+
     <div id="mainContainer" class="container">
-        <img id="logo" class="position-absolute img-fluid pl-3 d-none d-md-block d-lg-block d-xl-block" src="./images/logo2.png" />
+        <img id="logo" class="position-absolute pt-2 img-fluid pl-3 d-none d-md-block d-lg-block d-xl-block" src="./images/logo2.png" />
         <div class="card mt-3 mb-0">
-            </div>
+        </div>
         <div class="row">
             <div id="filterPanel" class=" mt-5">
                 <div class="card filterPanel">
                     <div class="card-body">
                         <h1 class="c2">Filter</h1>
                         <div class="mb-2">
-                        <span class="c2">Price range</span>
-                        <div class="input-group">
-                            <input id="filterMinPrice" type="number" class="form-control" placeholder="Min">
-                            <input id="filterMaxPrice" type="number" class="form-control" placeholder="Max">
+                            <span class="c2">Price range</span>
+                            <div class="input-group">
+                                <input id="filterMinPrice" type="number" class="form-control" placeholder="Min">
+                                <input id="filterMaxPrice" type="number" class="form-control" placeholder="Max">
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-2">
-                        <span class="c2">Time range</span>
-                        <div class="input-group">
-                            <input id="filter_dp" type="text" class="form-control" name="filter_dp" required />
+                        <div class="mb-2">
+                            <span class="c2">Time range</span>
+                            <div class="input-group">
+                                <input id="filter_dp" type="text" class="form-control" name="filter_dp" required />
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -92,27 +101,23 @@
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">Email</span>
                             </div>
-                            <input type="email" class="form-control" id="registerEmail"
-                                required>
+                            <input type="email" class="form-control" id="registerEmail" required>
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">Password</span>
                             </div>
-                            <input type="password" class="form-control" id="registerPassword"
-                                required>
+                            <input type="password" class="form-control" id="registerPassword" required>
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">First Name</span>
                             </div>
-                            <input type="email" class="form-control" id="registerFname"
-                                required>
+                            <input type="email" class="form-control" id="registerFname" required>
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">Last Name</span>
                             </div>
-                            <input type="email" class="form-control" id="registerLname"
-                                required>
+                            <input type="email" class="form-control" id="registerLname" required>
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
@@ -156,15 +161,13 @@
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">Email</span>
                             </div>
-                            <input type="email" class="form-control" id="loginEmail"
-                                required>
+                            <input type="email" class="form-control" id="loginEmail" required>
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="btn btn-outline-dark disabled">Password</span>
                             </div>
-                            <input type="password" class="form-control" id="loginPassword"
-                                required>
+                            <input type="password" class="form-control" id="loginPassword" required>
                         </div>
                     </div>
                     <button id="loginSubmit" type="button" class="btn btn-dark mb-2 py-2 mx-3 noborder">Login</button>
@@ -184,9 +187,9 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                     <div class="mb-3">
-                                <span>How many day(s) would you stay with us?</span>
-                                <input id="reservation_dp" type="text" class="form-control" name="reservation_dp" required />
+                        <div class="mb-3">
+                            <span>How many day(s) would you stay with us?</span>
+                            <input id="reservation_dp" type="text" class="form-control" name="reservation_dp" required />
                         </div>
                         <div class="mb-3 text-right mx-3">
                             <h5>Room <span id="reserveRoomNo">0</span></h5>
