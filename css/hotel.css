@@ -6,6 +6,7 @@
 #F45B69 
 */
 .bg-img {
+    z-index: -1000;
     -webkit-filter: blur(8px);
     /* Safari 6.0 - 9.0 */
     filter: blur(8px);
@@ -62,9 +63,8 @@ body {
 
 
 .smallLogo {
-    z-index: 999999 !important;
-    width: 110px;
-    height: 150px;
+        width: 100px;
+    height: 100px;
 }
 
 .noborder {
@@ -135,4 +135,9 @@ body {
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+
+.adminMainPanel {
+    
 }
